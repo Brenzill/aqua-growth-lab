@@ -14,7 +14,182 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      container_details: {
+        Row: {
+          barcode: string | null
+          call_sign: string | null
+          commodity_code: string | null
+          consec_no: string | null
+          consignment_note_no: string | null
+          container_no: string
+          count_code: string | null
+          country: string | null
+          created_at: string | null
+          farm_no: string | null
+          grade_code: string | null
+          gross: number | null
+          id: string
+          insp_code: string | null
+          insp_point: string | null
+          inspection_date: string | null
+          inventory_code: string | null
+          location_code: string | null
+          mark_code: string | null
+          nett: number | null
+          no_cartons: number | null
+          orchard: string | null
+          organization: string | null
+          original_intake_date: string | null
+          pack_code: string | null
+          phc: string | null
+          phyto_data: string | null
+          production_area: string | null
+          seal_number: string | null
+          season: string | null
+          ship_name: string | null
+          stuff_date: string | null
+          target_country: string | null
+          target_market: string | null
+          temptale: string | null
+          upn: string | null
+          validation_id: string | null
+          variety_code: string | null
+          voyage_no: string | null
+        }
+        Insert: {
+          barcode?: string | null
+          call_sign?: string | null
+          commodity_code?: string | null
+          consec_no?: string | null
+          consignment_note_no?: string | null
+          container_no: string
+          count_code?: string | null
+          country?: string | null
+          created_at?: string | null
+          farm_no?: string | null
+          grade_code?: string | null
+          gross?: number | null
+          id?: string
+          insp_code?: string | null
+          insp_point?: string | null
+          inspection_date?: string | null
+          inventory_code?: string | null
+          location_code?: string | null
+          mark_code?: string | null
+          nett?: number | null
+          no_cartons?: number | null
+          orchard?: string | null
+          organization?: string | null
+          original_intake_date?: string | null
+          pack_code?: string | null
+          phc?: string | null
+          phyto_data?: string | null
+          production_area?: string | null
+          seal_number?: string | null
+          season?: string | null
+          ship_name?: string | null
+          stuff_date?: string | null
+          target_country?: string | null
+          target_market?: string | null
+          temptale?: string | null
+          upn?: string | null
+          validation_id?: string | null
+          variety_code?: string | null
+          voyage_no?: string | null
+        }
+        Update: {
+          barcode?: string | null
+          call_sign?: string | null
+          commodity_code?: string | null
+          consec_no?: string | null
+          consignment_note_no?: string | null
+          container_no?: string
+          count_code?: string | null
+          country?: string | null
+          created_at?: string | null
+          farm_no?: string | null
+          grade_code?: string | null
+          gross?: number | null
+          id?: string
+          insp_code?: string | null
+          insp_point?: string | null
+          inspection_date?: string | null
+          inventory_code?: string | null
+          location_code?: string | null
+          mark_code?: string | null
+          nett?: number | null
+          no_cartons?: number | null
+          orchard?: string | null
+          organization?: string | null
+          original_intake_date?: string | null
+          pack_code?: string | null
+          phc?: string | null
+          phyto_data?: string | null
+          production_area?: string | null
+          seal_number?: string | null
+          season?: string | null
+          ship_name?: string | null
+          stuff_date?: string | null
+          target_country?: string | null
+          target_market?: string | null
+          temptale?: string | null
+          upn?: string | null
+          validation_id?: string | null
+          variety_code?: string | null
+          voyage_no?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "container_details_validation_id_fkey"
+            columns: ["validation_id"]
+            isOneToOne: false
+            referencedRelation: "validation_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      validation_history: {
+        Row: {
+          created_at: string | null
+          error_records: number | null
+          file_name: string
+          file_type: string
+          id: string
+          successful_records: number | null
+          total_cartons: number | null
+          total_containers: number | null
+          total_pallets: number | null
+          total_records: number | null
+          validation_errors: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_records?: number | null
+          file_name: string
+          file_type: string
+          id?: string
+          successful_records?: number | null
+          total_cartons?: number | null
+          total_containers?: number | null
+          total_pallets?: number | null
+          total_records?: number | null
+          validation_errors?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          error_records?: number | null
+          file_name?: string
+          file_type?: string
+          id?: string
+          successful_records?: number | null
+          total_cartons?: number | null
+          total_containers?: number | null
+          total_pallets?: number | null
+          total_records?: number | null
+          validation_errors?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

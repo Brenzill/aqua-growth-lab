@@ -5,8 +5,10 @@ import { EDIStats } from '@/components/EDIStats';
 import { ContainerTable } from '@/components/ContainerTable';
 import { FileLogCard } from '@/components/FileLogCard';
 import { TextConverter } from '@/components/TextConverter';
+import { Dashboard } from '@/components/Dashboard';
 import { EDIParser } from '@/utils/ediParser';
 import { ContainerSeal, EDIFileLog } from '@/types/edi';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FileCode, Waves, FileSpreadsheet, ArrowRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +23,7 @@ const Index = () => {
   const [rawFileContent, setRawFileContent] = useState<string | null>(null);
   const [isTextFile, setIsTextFile] = useState(false);
 
-  const handleFileUpload = (content: string, name: string) => {
+  const handleFileUpload = async (content: string, name: string) => {
     setRawFileContent(content);
     setFileName(name);
 
@@ -44,16 +46,20 @@ const Index = () => {
       const parser = new EDIParser();
       const result = parser.parseFile(content);
 
-      setFileLog({
+      const log = {
         ...result.fileLog,
         fileName: name,
-        status: 'completed',
+        status: 'completed' as const,
         createdAt: new Date().toISOString(),
         id: Date.now().toString(),
-      });
-      
+      };
+
+      setFileLog(log);
       setContainers(result.containers);
       setTotalRecords(result.records.length);
+
+      // Save to database
+      await saveToDatabase(name, result.containers, result.records.length, log);
 
       toast.success('File processed successfully!', {
         description: `Processed ${result.records.length} records and found ${result.containers.length} containers.`,
@@ -63,6 +69,84 @@ const Index = () => {
         description: 'Please check the file format and try again.',
       });
       console.error('Parse error:', error);
+    }
+  };
+
+  const saveToDatabase = async (
+    fileName: string,
+    containers: ContainerSeal[],
+    totalRecords: number,
+    log: Partial<EDIFileLog>
+  ) => {
+    try {
+      // Insert validation history
+      const { data: validation, error: validationError } = await supabase
+        .from('validation_history')
+        .insert({
+          file_name: fileName,
+          file_type: 'EDI',
+          total_records: totalRecords,
+          successful_records: totalRecords,
+          error_records: 0,
+          total_containers: containers.length,
+          total_pallets: log.totalPalletCount || 0,
+          total_cartons: log.totalCartonCount || 0,
+        })
+        .select()
+        .single();
+
+      if (validationError) throw validationError;
+
+      // Insert container details
+      if (validation && containers.length > 0) {
+        const containerRecords = containers.map((container) => ({
+          validation_id: validation.id,
+          season: container.season,
+          location_code: container.locationCode,
+          organization: container.organization,
+          stuff_date: container.stuffDate,
+          container_no: container.containerNo,
+          seal_number: container.sealNumber,
+          barcode: container.barcode,
+          no_cartons: container.noCartons,
+          gross: container.gross,
+          nett: container.nett,
+          commodity_code: container.commodityCode,
+          variety_code: container.varietyCode,
+          grade_code: container.gradeCode,
+          pack_code: container.packCode,
+          count_code: container.countCode,
+          mark_code: container.markCode,
+          target_market: container.targetMarket,
+          country: container.country,
+          farm_no: container.farmNo,
+          phc: container.phc,
+          orchard: container.orchard,
+          inspection_date: container.inspectionDate,
+          insp_point: container.inspPoint,
+          insp_code: container.inspCode,
+          original_intake_date: container.originalIntakeDate,
+          consignment_note_no: container.consignmentNoteNo,
+          temptale: container.temptale,
+          inventory_code: container.inventoryCode,
+          phyto_data: container.phytoData,
+          upn: container.upn,
+          consec_no: container.consecNo,
+          target_country: container.targetCountry,
+          production_area: container.productionArea,
+          ship_name: container.shipName,
+          voyage_no: container.voyageNo,
+          call_sign: container.callSign,
+        }));
+
+        const { error: containersError } = await supabase
+          .from('container_details')
+          .insert(containerRecords);
+
+        if (containersError) throw containersError;
+      }
+    } catch (error) {
+      console.error('Error saving to database:', error);
     }
   };
 
@@ -155,6 +239,15 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Dashboard */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <FileCode className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Dashboard</h2>
+          </div>
+          <Dashboard />
+        </section>
+
         {/* Quick Actions */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="p-6 hover:shadow-lg transition-shadow">

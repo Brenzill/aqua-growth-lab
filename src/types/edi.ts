@@ -15,13 +15,42 @@ export interface EDIFileLog {
 
 export interface ContainerSeal {
   id: string;
+  season?: string;
+  locationCode?: string;
+  organization?: string;
+  stuffDate?: string;
   containerNo: string;
   sealNumber: string;
-  shipName: string;
-  voyageNo: string;
-  callSign: string;
-  stuffDate: string;
-  consecNo: string;
+  barcode?: string;
+  noCartons?: number;
+  gross?: number;
+  nett?: number;
+  commodityCode?: string;
+  varietyCode?: string;
+  gradeCode?: string;
+  packCode?: string;
+  countCode?: string;
+  markCode?: string;
+  targetMarket?: string;
+  country?: string;
+  farmNo?: string;
+  phc?: string;
+  orchard?: string;
+  inspectionDate?: string;
+  inspPoint?: string;
+  inspCode?: string;
+  originalIntakeDate?: string;
+  consignmentNoteNo?: string;
+  temptale?: string;
+  inventoryCode?: string;
+  phytoData?: string;
+  upn?: string;
+  consecNo?: string;
+  targetCountry?: string;
+  productionArea?: string;
+  shipName?: string;
+  voyageNo?: string;
+  callSign?: string;
 }
 
 export interface PalletOut {
